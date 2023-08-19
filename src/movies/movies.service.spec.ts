@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MoviesService } from './movies.service';
 import { NotFoundException } from '@nestjs/common';
+import exp from 'constants';
 
 describe('MoviesService', () => {
   let service: MoviesService;
@@ -11,6 +12,13 @@ describe('MoviesService', () => {
     }).compile();
 
     service = module.get<MoviesService>(MoviesService);
+
+    // 매번 movie를 생성하고 있으므로 beforeEach에 써서 중복을 최소화 할 수 도 있음
+    // service.create({
+    //   title: "엘리멘탈",
+    //   genres: ["애니메이션/코미디"],
+    //   year: 2023,
+    // });
   });
 
   it('should be defined', () => {
@@ -84,6 +92,29 @@ describe('MoviesService', () => {
       const afterCreate = service.getAll().length;
 
       expect(afterCreate).toBeGreaterThan(beforeCreate);
+    });
+  });
+
+  describe("update()", () => {
+    it("should update a movie", () => {
+      service.create({
+        title: "엘리멘탈",
+        genres: ["애니메이션/코미디"],
+        year: 2023,
+      });
+
+      service.update(1, { title: "엘리멘탈2" });
+
+      const movie = service.getOne(1);
+      expect(movie.title).toEqual("엘리멘탈2");
+    });
+
+    it("should throw a NotFoundException", () => {
+      try {
+        service.update(999, { title: "엘리멘탈2" });
+      } catch (e) {
+        expect(e).toBeInstanceOf(NotFoundException);
+      }
     });
   });
 });
