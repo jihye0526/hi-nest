@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MoviesService } from './movies.service';
 import { NotFoundException } from '@nestjs/common';
-import { escape } from 'querystring';
 
 describe('MoviesService', () => {
   let service: MoviesService;
@@ -45,6 +44,46 @@ describe('MoviesService', () => {
         expect(e).toBeInstanceOf(NotFoundException);
         expect(e.message).toEqual("Movie with ID 999 not found.");
       }
+    });
+  });
+
+  describe("deleteOne()", () => {
+    it("deletes a movie", () => {
+      service.create({
+        title: "엘리멘탈",
+        genres: ["애니메이션/코미디"],
+        year: 2023,
+      });
+
+      const allMovies = service.getAll().length;
+      service.deleteOne(1);
+      const afterDelete = service.getAll().length;
+
+      expect(afterDelete).toBeLessThan(allMovies);
+    });
+
+    it("should return a 404", () => {
+      try {
+        service.deleteOne(999);
+      } catch (e) {
+        expect(e).toBeInstanceOf(NotFoundException);
+      }
+    });
+  });
+
+  describe("create()", () => {
+    it("should create a movie", () => {
+      const beforeCreate = service.getAll().length;
+
+      service.create({
+        title: "엘리멘탈",
+        genres: ["애니메이션/코미디"],
+        year: 2023,
+      });
+
+      const afterCreate = service.getAll().length;
+
+      expect(afterCreate).toBeGreaterThan(beforeCreate);
     });
   });
 });
