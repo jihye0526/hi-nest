@@ -36,7 +36,7 @@ describe('AppController (e2e)', () => {
         .expect([]);
     });
   
-    it("POST", () => {
+    it("POST 201", () => {
       return request(app.getHttpServer())
         .post("/movies")
         .send({
@@ -45,6 +45,18 @@ describe('AppController (e2e)', () => {
           year: 2023,
         })
         .expect(201);
+    });
+
+    it("POST 404", () => {
+      return request(app.getHttpServer())
+        .post("/movies")
+        .send({
+          title: "엘리멘탈",
+          genres: ["애니메이션/코미디"],
+          year: 2023,
+          etc: "JIHYE"
+        })
+        .expect(400);
     });
 
     it("DELETE", () => {
@@ -67,8 +79,19 @@ describe('AppController (e2e)', () => {
         .expect(404);
     });
 
-    it.todo("DELETE");
+    it("PATCH", () => {
+      return request(app.getHttpServer())
+        .patch("/movies/1")
+        .send({
+          title: "엘리멘탈2"
+        })
+        .expect(200);
+    });
 
-    it.todo("PATCH");
+    it("DELETE", () => {
+      return request(app.getHttpServer())
+        .delete("/movies/1")
+        .expect(200);
+    });
   });
 });
